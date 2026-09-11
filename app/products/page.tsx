@@ -46,7 +46,7 @@ export default function ProductsPage() {
 
   return (
     <AppShell>
-      <PageHeader title="Quantitative Machines" subtitle="Activate a plan to start earning" back={false} />
+      <PageHeader title="Quantitative Products" subtitle="Activate a plan to start earning" back={false} />
       <div className="space-y-4 px-4 py-4">
         <div className="card-elevated overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -54,11 +54,11 @@ export default function ProductsPage() {
           <div className="p-4">
             <h3 className="font-medium">How it works</h3>
             <ul className="mt-1 space-y-1 text-sm text-muted-foreground">
-              <li>• Trade a quantitative machine to start daily income</li>
+              <li>• Trade a quantitative product to start daily income</li>
               <li>• Profit ratio rises with size: 20% up to 26% daily</li>
               <li>• Income is credited every 24 hours for 4 days</li>
               <li>• Your capital is refunded after 4 days</li>
-              <li>• Activate multiple machines for more income</li>
+              <li>• Activate multiple products for more income</li>
             </ul>
           </div>
         </div>
@@ -74,7 +74,7 @@ export default function ProductsPage() {
             <div key={p.id} className="card-elevated overflow-hidden">
               <div className="machine-card-image">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/hero_image.jpg" alt={p.name || "Machine"} />
+                <img src="/hero_image.jpg" alt={p.name || "Product"} />
                 <p className="absolute bottom-2 left-4 z-10 text-xl font-medium text-white">
                   {p.name || ugx(p.price)}
                 </p>

@@ -476,7 +476,7 @@ insert into public.platform_settings (key, value) values
   ('withdraw_fee_percent', '20'),
   ('withdraw_start_time', '09:00'),
   ('withdraw_end_time', '23:00'),
-  ('whatsapp_support', 'https://wa.me/+256704057716'),
+  ('telegram_support', 'https://t.me/+256704057716'),
   ('whatsapp_group', 'https://chat.whatsapp.com/BaxNRCmfLKO9OJIPpRDbbA'),
   ('force_refresh_timestamp', '0'),
   ('referral_percent', '5')

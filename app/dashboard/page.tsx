@@ -8,6 +8,7 @@ import {
   History,
   KeyRound,
   RefreshCw,
+  Send,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -110,7 +111,7 @@ export default function DashboardPage() {
     }
   }
 
-  const support = settings.whatsapp_support || "https://wa.me/+256704057716";
+  const support = settings.telegram_support || "https://t.me/+256704057716";
   const group = settings.whatsapp_group || "#";
 
   return (
@@ -156,7 +157,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-lg font-medium">{ugx(profile?.total_withdrawals)}</p>
-              <p className="text-xs text-muted-foreground">Total withdraws</p>
+              <p className="text-xs text-muted-foreground">Total cash outs</p>
             </div>
           </div>
           <div className="mt-3 text-center">
@@ -168,7 +169,7 @@ export default function DashboardPage() {
               Recharge
             </button>
             <button type="button" onClick={() => router.push("/withdraw")} className="rounded-xl bg-sky-400 py-2.5 text-sm font-medium text-white">
-              Withdraw
+              Cash Out
             </button>
           </div>
         </div>
@@ -176,9 +177,9 @@ export default function DashboardPage() {
         <h2 className="mb-2 text-base font-medium">Quick Actions</h2>
         <div className="mb-6 grid grid-cols-3 gap-3">
           <ActionTile href="/deposit" iconSrc="/icons/recharge.png" label="Deposit" />
-          <ActionTile href="/withdraw" iconSrc="/icons/withdrawal.png" label="Withdraw" />
+          <ActionTile href="/withdraw" iconSrc="/icons/withdrawal.png" label="Cash Out" />
           <ActionTile href="/team" iconSrc="/icons/referral.png" label="Referral" />
-          <ActionTile href="/products" iconSrc="/icons/products.png" label="Machines" />
+          <ActionTile href="/products" iconSrc="/icons/products.png" label="Products" />
           <ActionTile href="/about" iconSrc="/icons/company.png" label="About" />
           <ActionTile href="/investments" iconSrc="/icons/investments.png" label="My Trades" />
         </div>
@@ -186,14 +187,14 @@ export default function DashboardPage() {
         <h2 className="mb-2 text-base font-medium">Support</h2>
         <div className="mb-6 grid grid-cols-3 gap-3">
           <ActionTile onClick={() => setSheet("table")} icon={<CalendarDays />} label="Trade Table" />
-          <ActionTile href={support} iconSrc="/icons/whatsapp.png" label="Support" />
+          <ActionTile href={support} icon={<Send />} label="Support" />
           <ActionTile href={group} iconSrc="/icons/group.png" label="WhatsApp Group" />
         </div>
 
         <h2 className="mb-2 text-base font-medium">Account</h2>
         <div className="mb-6 grid grid-cols-3 gap-3">
           <ActionTile onClick={openIncome} icon={<History />} label="Income History" />
-          <ActionTile onClick={openWithdraw} icon={<History />} label="Withdrawal History" />
+          <ActionTile onClick={openWithdraw} icon={<History />} label="Cash Out History" />
           <ActionTile onClick={() => setSheet("password")} icon={<KeyRound />} label="Change Password" />
           <ActionTile href="/VivianFi.apk" icon={<Download />} label="Download App" />
         </div>

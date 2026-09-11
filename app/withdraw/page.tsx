@@ -70,7 +70,7 @@ export default function WithdrawPage() {
   return (
     <AppShell>
       <PageHeader
-        title="Withdraw"
+        title="Cash Out"
         subtitle={`Balance: ${ugx(profile?.balance)}`}
         right={
           <button type="button" onClick={loadHistory} className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 text-white">

@@ -117,15 +117,15 @@ export default function DepositPage() {
           <>
             <div className="card-elevated space-y-2 p-4 text-sm">
               <p>
-                Send <span className="font-medium">{ugx(n)}</span> via {method} to:
+                Your are depositing <span className="font-medium">{ugx(n)}</span> via {method} to:
               </p>
               <p className="text-lg font-medium">{payTo.number}</p>
               <p className="text-muted-foreground">{payTo.name}</p>
             </div>
             <div className="card-elevated p-4">
               <label className="text-sm">
-                Transaction ID
-                <input className="input-field mt-1" placeholder="Enter transaction ID" value={tx} onChange={(e) => setTx(e.target.value)} />
+                Names
+                <input className="input-field mt-1" placeholder="Enter your names" value={tx} onChange={(e) => setTx(e.target.value)} />
               </label>
             </div>
             <button disabled={busy || !tx.trim()} onClick={submit} className="btn-gradient w-full rounded-xl py-3 disabled:opacity-40">
