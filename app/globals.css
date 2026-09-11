@@ -1,0 +1,191 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 250 45% 7%;
+  --foreground: 270 40% 96%;
+  --card: 248 38% 12%;
+  --card-foreground: 270 40% 96%;
+  --primary: 271 81% 56%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 248 30% 18%;
+  --secondary-foreground: 270 30% 90%;
+  --muted: 248 25% 16%;
+  --muted-foreground: 260 15% 70%;
+  --accent: 262 83% 58%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 162 70% 45%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 8%;
+  --border: 260 25% 22%;
+  --input: 260 25% 22%;
+  --ring: 271 81% 56%;
+  --radius: 1rem;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+html,
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: "DM Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+.btn-mint,
+.btn-gradient {
+  color: hsl(var(--primary-foreground));
+  background: linear-gradient(135deg, #4f46e5, #a855f7 50%, #ec4899);
+  box-shadow: 0 4px 24px -4px #a855f766;
+  transition: all 0.2s ease;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #6366f1, #c026d3 50%, #f472b6);
+}
+
+.card-elevated {
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  box-shadow: 0 8px 32px -12px #6d28d94d;
+}
+
+.gradient-mint {
+  background: linear-gradient(135deg, #312e81, #6d28d9 55%, #db2777);
+}
+
+.stat-card {
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  padding: 1rem;
+  box-shadow: 0 8px 32px -12px #6d28d94d;
+}
+
+.dashboard-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  border: 2px solid hsl(var(--primary) / 0.18);
+  background: hsl(var(--card));
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.dashboard-btn:hover {
+  border-color: hsl(var(--primary) / 0.45);
+  background: hsl(var(--primary) / 0.12);
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-top: 1px solid hsl(var(--border));
+  background: hsl(var(--card) / 0.92);
+  backdrop-filter: blur(24px);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.bottom-nav-item.active {
+  color: #e879f9;
+}
+
+.input-field {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--secondary) / 0.7);
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: all 0.15s ease;
+  color: hsl(var(--foreground));
+}
+
+.input-field:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.25);
+}
+
+.toast-custom {
+  border-radius: 0.75rem !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.875rem !important;
+  background: #12081fd9 !important;
+  color: #fff !important;
+  border: 1px solid hsla(270, 80%, 70%, 0.2) !important;
+}
+
+.combined-stats-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  padding: 1rem;
+  box-shadow: 0 8px 32px -12px #6d28d94d;
+}
+
+.hero-stats-card {
+  border-radius: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #1e1b4b, #6d28d9 55%, #be185d);
+  box-shadow: 0 8px 28px -6px #a855f766;
+}
+
+.hero-stats-card p {
+  color: #fff;
+}
+
+.hero-stats-card .text-muted-foreground {
+  color: #ffffffbf;
+}
+
+.machine-card-image {
+  position: relative;
+  height: 8rem;
+  overflow: hidden;
+}
+
+.machine-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.machine-card-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, hsl(var(--card)), transparent 60%);
+}
