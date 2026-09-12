@@ -26,6 +26,11 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { api } from "@/lib/api";
 import { getSupabase, ugx, type IncomeRow, type Product, type Story, type Withdrawal } from "@/lib/supabase";
 
+type InstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
+
 function ActionTile({
   href,
   onClick,
@@ -74,6 +79,21 @@ export default function DashboardPage() {
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as InstallPromptEvent);
+    };
+    const handleAppInstalled = () => setInstallPrompt(null);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
 
   useEffect(() => {
     refresh();
@@ -115,6 +135,16 @@ export default function DashboardPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function installApp() {
+    if (!installPrompt) {
+      toast("Use your browser menu and choose 'Install VivianFi' or 'Add to Home screen'.");
+      return;
+    }
+    await installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
   }
 
   const support = settings.telegram_support || "https://t.me/vivianfibot";
@@ -202,7 +232,7 @@ export default function DashboardPage() {
           <ActionTile onClick={openIncome} icon={<History />} label="Income History" />
           <ActionTile onClick={openWithdraw} icon={<History />} label="Cash Out History" />
           <ActionTile onClick={() => setSheet("password")} icon={<KeyRound />} label="Change Password" />
-          <ActionTile href="/VivianFi.apk" icon={<Download />} label="Download App" />
+          <ActionTile onClick={installApp} icon={<Download />} label="Download App" />
         </div>
 
         <h2 className="mb-2 text-base font-medium">Success Stories</h2>

@@ -1,0 +1,18 @@
+{
+  "name": "VivianFi",
+  "short_name": "VivianFi",
+  "description": "VivianFi financial intelligence platform.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#12081f",
+  "theme_color": "#6d28d9",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

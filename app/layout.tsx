@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   description:
     "VivianFi is a next-generation technology and financial intelligence platform. Activate quantitative machines, earn daily returns, and grow with Direct Affiliate Bonuses.",
   icons: { icon: "/favicon.jpg" },
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
