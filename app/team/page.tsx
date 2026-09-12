@@ -10,7 +10,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { getSupabase, ugx, type Profile } from "@/lib/supabase";
 
 export default function TeamPage() {
-  const { profile, settings, signOut } = useAuth();
+  const { profile, settings, refresh, signOut } = useAuth();
   const router = useRouter();
   const [refs, setRefs] = useState<Pick<Profile, "id" | "username" | "created_at">[]>([]);
   const pct = settings.referral_percent || "5";
@@ -24,6 +24,10 @@ export default function TeamPage() {
       .order("created_at", { ascending: false })
       .then(({ data }) => setRefs((data as Pick<Profile, "id" | "username" | "created_at">[]) ?? []));
   }, [profile]);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const link = `${origin}/register?ref=${profile?.referral_code || ""}`;

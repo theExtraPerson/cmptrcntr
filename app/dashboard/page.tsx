@@ -3,12 +3,18 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  BarChart,
   CalendarDays,
   Download,
   History,
+  Info,
   KeyRound,
   RefreshCw,
   Send,
+  Box,
+  Users,
+  BanknoteArrowUp,
+  BanknoteArrowDown,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -111,8 +117,8 @@ export default function DashboardPage() {
     }
   }
 
-  const support = settings.telegram_support || "https://t.me/+256704057716";
-  const group = settings.whatsapp_group || "#";
+  const support = settings.telegram_support || "https://t.me/vivianfibot";
+  const group = settings.telegram_group || "https://t.me/+vzcgwRPI9m5lOTY8";
 
   return (
     <AppShell>
@@ -176,19 +182,19 @@ export default function DashboardPage() {
 
         <h2 className="mb-2 text-base font-medium">Quick Actions</h2>
         <div className="mb-6 grid grid-cols-3 gap-3">
-          <ActionTile href="/deposit" iconSrc="/icons/recharge.png" label="Deposit" />
-          <ActionTile href="/withdraw" iconSrc="/icons/withdrawal.png" label="Cash Out" />
-          <ActionTile href="/team" iconSrc="/icons/referral.png" label="Referral" />
-          <ActionTile href="/products" iconSrc="/icons/products.png" label="Products" />
-          <ActionTile href="/about" iconSrc="/icons/company.png" label="About" />
-          <ActionTile href="/investments" iconSrc="/icons/investments.png" label="My Trades" />
+          <ActionTile href="/deposit" icon={<BanknoteArrowUp />} label="Recharge" />
+          <ActionTile href="/withdraw" icon={<BanknoteArrowDown />} label="Cash Out" />
+          <ActionTile href="/team" icon={<Users />} label="Referral" />
+          <ActionTile href="/products" icon={<Box />} label="Products" />
+          <ActionTile href="/about" icon={<Info />} label="About" />
+          <ActionTile href="/investments" icon={<BarChart />} label="My VivianFi Trades" />
         </div>
 
         <h2 className="mb-2 text-base font-medium">Support</h2>
         <div className="mb-6 grid grid-cols-3 gap-3">
           <ActionTile onClick={() => setSheet("table")} icon={<CalendarDays />} label="Trade Table" />
-          <ActionTile href={support} icon={<Send />} label="Support" />
-          <ActionTile href={group} iconSrc="/icons/group.png" label="WhatsApp Group" />
+          <ActionTile href={support} icon={<Send />} label="Telegram Support" />
+          <ActionTile href={group} icon={<Info />} label="Telegram Group" />
         </div>
 
         <h2 className="mb-2 text-base font-medium">Account</h2>

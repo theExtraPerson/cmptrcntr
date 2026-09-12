@@ -192,6 +192,45 @@ create policy "own investments" on public.user_investments for select using (aut
 create policy "own income" on public.income_history for select using (auth.uid() = user_id or public.is_admin());
 create policy "stories public" on public.success_stories for select using (is_published = true or public.is_admin());
 
+create or replace function public.credit_referral_commission(p_deposit_id uuid)
+returns numeric
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  d public.deposits%rowtype;
+  referrer uuid;
+  commission numeric := 0;
+  pct numeric;
+begin
+  select * into d from public.deposits where id = p_deposit_id;
+  if not found or d.status <> 'approved' then return 0; end if;
+  if not exists (select 1 from public.user_investments where user_id = d.user_id) then return 0; end if;
+
+  select referred_by into referrer from public.profiles where id = d.user_id;
+  if referrer is null then return 0; end if;
+  if exists (
+    select 1 from public.income_history
+    where user_id = referrer and type = 'referral' and source_id = d.id
+  ) then return 0; end if;
+
+  select coalesce(nullif(value, '')::numeric, 5) into pct
+    from public.platform_settings where key = 'referral_percent';
+  commission := round(d.amount * coalesce(pct, 5) / 100, 0);
+  if commission > 0 then
+    update public.profiles
+      set balance = balance + commission,
+          total_income = total_income + commission,
+          referral_income = referral_income + commission
+      where id = referrer;
+    insert into public.income_history (user_id, amount, type, source_id)
+    values (referrer, commission, 'referral', d.id);
+  end if;
+  return commission;
+end;
+$$;
+
 create or replace function public.approve_deposit(p_deposit_id uuid)
 returns jsonb
 language plpgsql
@@ -200,10 +239,7 @@ set search_path = public
 as $$
 declare
   d public.deposits%rowtype;
-  referrer uuid;
   commission numeric;
-  pct numeric;
-  activated boolean;
 begin
   select * into d from public.deposits where id = p_deposit_id for update;
   if not found then
@@ -225,24 +261,7 @@ begin
   insert into public.income_history (user_id, amount, type, source_id)
   values (d.user_id, d.amount, 'deposit', d.id);
 
-  -- 5% Direct Affiliate Bonus after the referred user has activated a quantitative robot
-  select exists(select 1 from public.user_investments where user_id = d.user_id) into activated;
-  select referred_by into referrer from public.profiles where id = d.user_id;
-  select coalesce(nullif(value, '')::numeric, 5) into pct
-    from public.platform_settings where key = 'referral_percent';
-  if pct is null then pct := 5; end if;
-  if activated and referrer is not null then
-    commission := round(d.amount * pct / 100, 0);
-    if commission > 0 then
-      update public.profiles
-        set balance = balance + commission,
-            total_income = total_income + commission,
-            referral_income = referral_income + commission
-        where id = referrer;
-      insert into public.income_history (user_id, amount, type, source_id)
-      values (referrer, commission, 'referral', d.id);
-    end if;
-  end if;
+  commission := public.credit_referral_commission(d.id);
 
   return jsonb_build_object('ok', true, 'commission', coalesce(commission, 0));
 end;
@@ -347,6 +366,7 @@ set search_path = public
 as $$
 declare
   p public.investment_products%rowtype;
+  d public.deposits%rowtype;
   bal numeric;
   iid uuid;
 begin
@@ -365,6 +385,15 @@ begin
     p_user_id, p.id, p.price, p.daily_income, 0, p.validity_days,
     now() + interval '24 hours', true, false
   ) returning id into iid;
+
+  -- The first deposit is commonly approved before the user activates a product.
+  for d in
+    select * from public.deposits
+    where user_id = p_user_id and status = 'approved'
+    order by created_at
+  loop
+    perform public.credit_referral_commission(d.id);
+  end loop;
 
   return iid;
 end;
@@ -445,6 +474,7 @@ end;
 $$;
 
 revoke all on function public.approve_deposit(uuid) from public, anon, authenticated;
+revoke all on function public.credit_referral_commission(uuid) from public, anon, authenticated;
 revoke all on function public.reject_deposit(uuid) from public, anon, authenticated;
 revoke all on function public.request_withdraw(uuid, numeric, numeric, numeric, text) from public, anon, authenticated;
 revoke all on function public.reject_withdraw(uuid) from public, anon, authenticated;
@@ -454,6 +484,7 @@ revoke all on function public.process_user_payouts(uuid) from public, anon, auth
 revoke all on function public.adjust_user_balance(uuid, numeric) from public, anon, authenticated;
 
 grant execute on function public.approve_deposit(uuid) to service_role;
+grant execute on function public.credit_referral_commission(uuid) to service_role;
 grant execute on function public.reject_deposit(uuid) to service_role;
 grant execute on function public.request_withdraw(uuid, numeric, numeric, numeric, text) to service_role;
 grant execute on function public.reject_withdraw(uuid) to service_role;
@@ -508,3 +539,22 @@ update public.platform_settings
   where key = 'welcome_popup_message';
 update public.platform_settings set value = '20' where key = 'withdraw_fee_percent';
 update public.platform_settings set value = '23:00' where key = 'withdraw_end_time';
+
+-- Backfill commissions skipped before activation; existing referral income records are ignored.
+do $$
+declare
+  d record;
+begin
+  for d in
+    select deposits.id
+    from public.deposits
+    where deposits.status = 'approved'
+      and exists (
+        select 1 from public.user_investments
+        where user_investments.user_id = deposits.user_id
+      )
+  loop
+    perform public.credit_referral_commission(d.id);
+  end loop;
+end;
+$$;

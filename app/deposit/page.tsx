@@ -69,7 +69,7 @@ export default function DepositPage() {
   return (
     <AppShell>
       <PageHeader
-        title="Deposit"
+        title="Recharge"
         right={
           <button type="button" onClick={loadHistory} className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 text-white">
             <History size={18} />

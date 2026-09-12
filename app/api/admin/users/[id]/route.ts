@@ -14,9 +14,10 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   }
   if (body.delta !== undefined) {
     const delta = Number(body.delta);
-    if (!Number.isFinite(delta) || delta === 0) return jsonError("Enter a valid amount");
-    const { error: rpcErr } = await admin.rpc("adjust_user_balance", { p_user_id: id, p_delta: delta });
+    if (!Number.isFinite(delta) || delta === 0) return jsonError("Enter a valid non-zero amount");
+    const { data: balance, error: rpcErr } = await admin.rpc("adjust_user_balance", { p_user_id: id, p_delta: delta });
     if (rpcErr) return jsonError(rpcErr.message);
+    return NextResponse.json({ ok: true, balance });
   }
   return NextResponse.json({ ok: true });
 }

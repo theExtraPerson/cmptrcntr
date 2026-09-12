@@ -6,6 +6,8 @@ import {
   Box,
   FileText,
   LayoutDashboard,
+  Minus,
+  Plus,
   Search,
   Settings,
   Shield,
@@ -203,7 +205,7 @@ function DepositsTab() {
           <p>
             {ugx(d.amount)} • {d.payment_method}
           </p>
-          <p className="text-xs text-muted-foreground">TX {d.transaction_id}</p>
+          <p className="text-xs text-muted-foreground">{d.sender_phone} {d.sender_name}</p>
           {d.status === "pending" ? (
             <div className="flex gap-2">
               <button
@@ -307,6 +309,27 @@ function UsersTab() {
   useEffect(() => {
     load();
   }, [load]);
+
+  async function adjustBalance(userId: string, direction: 1 | -1) {
+    const amount = Number(delta[userId]);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      toast.error("Enter a valid positive amount");
+      return;
+    }
+
+    try {
+      await api(`/api/admin/users/${userId}`, {
+        method: "POST",
+        body: JSON.stringify({ delta: direction * amount }),
+      });
+      setDelta((current) => ({ ...current, [userId]: "" }));
+      toast.success(direction === 1 ? "Balance added" : "Balance deducted");
+      await load();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update balance");
+    }
+  }
+
   return (
     <>
       <h3 className="font-medium">Users</h3>
@@ -321,20 +344,26 @@ function UsersTab() {
           <div className="flex gap-2">
             <input
               className="input-field"
-              placeholder="+/- amount"
+              type="number"
+              min="0"
+              step="any"
+              placeholder="Amount"
               value={delta[u.id] || ""}
               onChange={(e) => setDelta((s) => ({ ...s, [u.id]: e.target.value }))}
             />
             <button
-              className="rounded-xl bg-emerald-600 px-3 text-white"
+              className="flex items-center gap-1 rounded-xl bg-emerald-600 px-3 text-white"
               type="button"
-              onClick={async () => {
-                await api(`/api/admin/users/${u.id}`, { method: "POST", body: JSON.stringify({ delta: Number(delta[u.id]) }) });
-                toast.success("Balance updated");
-                load();
-              }}
+              onClick={() => adjustBalance(u.id, 1)}
             >
-              Adjust
+              <Plus size={16} /> Add
+            </button>
+            <button
+              className="flex items-center gap-1 rounded-xl bg-rose-600 px-3 text-white"
+              type="button"
+              onClick={() => adjustBalance(u.id, -1)}
+            >
+              <Minus size={16} /> Deduct
             </button>
           </div>
           <button
