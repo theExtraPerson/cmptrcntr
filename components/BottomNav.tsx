@@ -6,7 +6,7 @@ import { Home, ShoppingBag, Users } from "lucide-react";
 
 const items = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/products", label: "Machines", icon: ShoppingBag },
+  { href: "/products", label: "Products", icon: ShoppingBag },
   { href: "/team", label: "My Team", icon: Users },
 ];
 
