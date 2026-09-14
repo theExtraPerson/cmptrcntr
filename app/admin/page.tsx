@@ -205,7 +205,7 @@ function DepositsTab() {
           <p>
             {ugx(d.amount)} • {d.payment_method}
           </p>
-          <p className="text-xs text-muted-foreground">{d.sender_phone} by {d.sender_name}</p>
+          <p className="text-xs text-muted-foreground">{d.sender_phone} by {d.profiles?.username}</p>
           {d.status === "pending" ? (
             <div className="flex gap-2">
               <button
@@ -263,7 +263,7 @@ function WithdrawalsTab() {
           <p>
             {ugx(w.amount)} net {ugx(w.net_amount)}
           </p>
-          <p className="text-xs text-muted-foreground">{w.phone}</p>
+          <p className="text-xs text-muted-foreground">{w.profiles?.phone}</p>
           {w.status === "pending" ? (
             <div className="flex gap-2">
               <button
