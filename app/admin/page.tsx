@@ -205,7 +205,7 @@ function DepositsTab() {
           <p>
             {ugx(d.amount)} • {d.payment_method}
           </p>
-          <p className="text-xs text-muted-foreground">{d.sender_phone} by {d.profiles?.username}</p>
+          <p className="text-xs text-muted-foreground">{d.sender_phone} by {d.sender_name}</p>
           {d.status === "pending" ? (
             <div className="flex gap-2">
               <button
@@ -298,13 +298,17 @@ function WithdrawalsTab() {
 
 function UsersTab() {
   const [q, setQ] = useState("");
-  const [rows, setRows] = useState<Profile[]>([]);
+  const [rows, setRows] = useState<(Profile & { deposits?: { sender_name: string | null; sender_phone: string | null; created_at: string }[] })[]>([]);
   const [delta, setDelta] = useState<Record<string, string>>({});
   const load = useCallback(async () => {
-    let query = getSupabase().from("profiles").select("*").order("created_at", { ascending: false }).limit(80);
+    let query = getSupabase()
+      .from("profiles")
+      .select("*, deposits(sender_name, sender_phone, created_at)")
+      .order("created_at", { ascending: false })
+      .limit(80);
     if (q) query = query.or(`username.ilike.%${q}%,phone.ilike.%${q}%`);
     const { data } = await query;
-    setRows((data as Profile[]) ?? []);
+    setRows((data as typeof rows) ?? []);
   }, [q]);
   useEffect(() => {
     load();
@@ -341,6 +345,12 @@ function UsersTab() {
             <span>{ugx(u.balance)}</span>
           </div>
           <p className="text-xs text-muted-foreground">{u.phone}</p>
+          {u.deposits?.[0]?.sender_name ? (
+            <p className="text-xs text-muted-foreground">
+              Deposit sender: {u.deposits[0].sender_name}
+              {u.deposits[0].sender_phone ? ` (${u.deposits[0].sender_phone})` : ""}
+            </p>
+          ) : null}
           <div className="flex gap-2">
             <input
               className="input-field"
