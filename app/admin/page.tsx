@@ -205,7 +205,7 @@ function DepositsTab() {
           <p>
             {ugx(d.amount)} • {d.payment_method}
           </p>
-          <p className="text-xs text-muted-foreground">{d.sender_phone} {d.sender_name}</p>
+          <p className="text-xs text-muted-foreground">{d.sender_phone} by {d.sender_name}</p>
           {d.status === "pending" ? (
             <div className="flex gap-2">
               <button
