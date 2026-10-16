@@ -1,15 +1,15 @@
 {
-  "name": "VivianFi",
-  "short_name": "VivianFi",
-  "description": "VivianFi financial intelligence platform.",
+  "name": "Computer Center",
+  "short_name": "Computer Center",
+  "description": "Computer products, partnership plans, and account services in Kampala, Uganda.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#12081f",
-  "theme_color": "#6d28d9",
+  "background_color": "#f1f1f1",
+  "theme_color": "#f1f1f1",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/favicon.jpg",
+      "src": "/logo.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any"

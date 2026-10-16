@@ -1,0 +1,195 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --platinum: #f1f1f1ff;
+  --full-spectrum-blue: #085cf0ff;
+  --deep-twilight: #040957ff;
+  --background: 0 0% 94.51%;
+  --foreground: 237.1 91.2% 17.84%;
+  --card: 0 0% 94.51%;
+  --card-foreground: 237.1 91.2% 17.84%;
+  --primary: 218.3 93.55% 48.63%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 90%;
+  --secondary-foreground: 237.1 91.2% 17.84%;
+  --muted: 0 0% 90%;
+  --muted-foreground: 237 35% 38%;
+  --accent: 218.3 93.55% 48.63%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 162 70% 45%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 8%;
+  --border: 237 25% 78%;
+  --input: 237 25% 78%;
+  --ring: 218.3 93.55% 48.63%;
+  --radius: 1rem;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+html,
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: "DM Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+.btn-mint,
+.btn-gradient {
+  color: hsl(var(--primary-foreground));
+  background: hsl(var(--primary));
+  box-shadow: 0 4px 24px -4px hsl(var(--primary) / 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-mint:hover,
+.btn-gradient:hover {
+  background: hsl(220 94% 42%);
+}
+
+.card-elevated {
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--card));
+  box-shadow: 0 8px 32px -12px hsl(var(--foreground) / 0.12);
+}
+
+.gradient-mint {
+  background: hsl(var(--primary));
+}
+
+.stat-card {
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  padding: 1rem;
+  box-shadow: 0 8px 32px -12px hsl(var(--foreground) / 0.12);
+}
+
+.dashboard-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  border: 2px solid hsl(var(--primary) / 0.18);
+  background: hsl(var(--card));
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.dashboard-btn:hover {
+  border-color: hsl(var(--primary) / 0.45);
+  background: hsl(var(--primary) / 0.08);
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-top: 1px solid hsl(var(--border));
+  background: hsl(var(--card) / 0.92);
+  backdrop-filter: blur(24px);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.bottom-nav-item.active {
+  color: hsl(var(--primary));
+}
+
+.input-field {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--secondary));
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: all 0.15s ease;
+  color: hsl(var(--foreground));
+}
+
+.input-field:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.25);
+}
+
+.toast-custom {
+  border-radius: 0.75rem !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.875rem !important;
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+.combined-stats-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  padding: 1rem;
+  box-shadow: 0 8px 32px -12px hsl(var(--foreground) / 0.12);
+}
+
+.hero-stats-card {
+  border-radius: 1rem;
+  padding: 1.25rem;
+  background: hsl(var(--primary));
+  box-shadow: 0 8px 28px -6px hsl(var(--primary) / 0.25);
+}
+
+.hero-stats-card p {
+  color: hsl(var(--primary-foreground));
+}
+
+.hero-stats-card .text-muted-foreground {
+  color: hsl(var(--primary-foreground) / 0.8);
+}
+
+.machine-card-image {
+  position: relative;
+  height: 8rem;
+  overflow: hidden;
+}
+
+.machine-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.machine-card-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, hsl(var(--card)), transparent 60%);
+}
