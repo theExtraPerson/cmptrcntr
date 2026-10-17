@@ -45,7 +45,7 @@ export default function LoginPage() {
             <div className="relative mt-1">
               <User size={16} className="absolute left-4 top-3.5 text-muted-foreground" />
               <input
-                className="input-field py-3.5 pl-12"
+                className="input-field py-3.5 px-5"
                 placeholder="Enter username"
                 required
                 value={username}
@@ -58,7 +58,7 @@ export default function LoginPage() {
             <div className="relative mt-1">
               <Lock size={16} className="absolute left-4 top-3.5 text-muted-foreground" />
               <input
-                className="input-field py-3.5 pl-12 pr-12"
+                className="input-field py-3.5 px-5"
                 type={show ? "text" : "password"}
                 placeholder="••••••••"
                 required

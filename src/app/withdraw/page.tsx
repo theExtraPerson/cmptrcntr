@@ -134,8 +134,7 @@ export default function WithdrawPage() {
           <p>
             You may request one withdrawal of at least {ugx(min)} per Kampala calendar day. Pending requests carry
             forward for administrator review and do not prevent a new request the next day. Only available wallet
-            funds can be requested; plan earnings and any capital return are not available until the plan duration
-            ends and a final payout is approved.
+            funds can be requested.
           </p>
         </div>
         <div className={`rounded-2xl border p-4 ${open ? "border-primary/40 bg-primary/5" : "border-red-400/40 bg-red-500/10"}`}>
@@ -155,7 +154,7 @@ export default function WithdrawPage() {
         <div className="card-elevated p-4">
           <label className="text-sm">
             Phone Number
-            <input className="input-field mt-1" placeholder="0700000000" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <input className="input-field mt-1" placeholder="Input phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </label>
         </div>
         <button disabled={!canSubmit || busy} onClick={submit} className="btn-gradient w-full rounded-xl py-3 disabled:opacity-40">

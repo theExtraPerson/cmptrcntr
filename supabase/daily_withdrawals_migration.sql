@@ -3,9 +3,9 @@
 begin;
 
 insert into public.platform_settings (key, value)
-values ('min_withdrawal', '30000')
+values ('min_withdrawal', '3000')
 on conflict (key) do update
-set value = greatest(coalesce(nullif(public.platform_settings.value, '')::numeric, 0), 30000)::text,
+set value = greatest(coalesce(nullif(public.platform_settings.value, '')::numeric, 0), 3000)::text,
     updated_at = now();
 
 delete from public.platform_settings
@@ -37,8 +37,8 @@ declare
   day_start timestamptz;
   next_day_start timestamptz;
 begin
-  if p_amount < 30000 or p_fee < 0 or p_net <= 0 or p_net <> p_amount - p_fee then
-    raise exception 'Minimum withdrawal is UGX 30,000 and the amount/fee must be valid';
+  if p_amount < 3000 or p_fee < 0 or p_net <= 0 or p_net <> p_amount - p_fee then
+    raise exception 'Minimum withdrawal is UGX 3,000 and the amount/fee must be valid';
   end if;
   if p_phone !~ '^2567[0-9]{8}$' then
     raise exception 'Invalid Ugandan phone number';

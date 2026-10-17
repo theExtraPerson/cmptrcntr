@@ -3,13 +3,19 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  BanknoteArrowDown,
+  BanknoteArrowUp,
+  BarChart,
+  Box,
   CalendarDays,
   Download,
   History,
   Info,
   KeyRound,
   RefreshCw,
+  Shield,
   Send,
+  Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -31,35 +37,28 @@ function ActionTile({
   href,
   onClick,
   icon,
-  iconSrc,
   label,
 }: {
   href?: string;
   onClick?: () => void;
-  icon?: React.ReactNode;
-  iconSrc?: string;
+  icon: React.ReactNode;
   label: string;
 }) {
   const inner = (
     <>
-      {iconSrc ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={iconSrc} alt="" className="h-10 w-10 object-contain" />
-      ) : (
-        <div className="text-2xl">{icon}</div>
-      )}
-      <span className="text-sm font-medium">{label}</span>
+      <div className="dashboard-btn-icon" aria-hidden="true">{icon}</div>
+      <span className="dashboard-btn-label">{label}</span>
     </>
   );
   if (href) {
     return (
-      <Link href={href} className="dashboard-btn">
+      <Link href={href} className="dashboard-btn dashboard-control">
         {inner}
       </Link>
     );
   }
   return (
-    <button type="button" onClick={onClick} className="dashboard-btn w-full">
+    <button type="button" onClick={onClick} className="dashboard-btn dashboard-control w-full">
       {inner}
     </button>
   );
@@ -170,7 +169,7 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => refresh()}
-              className="flex items-center gap-1 rounded-full border bg-card px-3 py-1.5 text-xs"
+              className="dashboard-control flex items-center gap-1 rounded-full px-3 py-1.5 text-xs"
             >
               <RefreshCw size={12} /> Refresh
             </button>
@@ -178,9 +177,9 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={() => router.push("/admin")}
-                className="rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                className="dashboard-control flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium"
               >
-                Admin
+                <Shield size={13} /> Admin
               </button>
             ) : null}
           </div>
@@ -206,39 +205,39 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">Account balance</p>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2">
-            <button type="button" onClick={() => router.push("/deposit")} className="rounded-xl bg-primary py-2.5 text-sm font-medium text-primary-foreground">
-              Deposit
+            <button type="button" onClick={() => router.push("/deposit")} className="dashboard-control flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium">
+              <BanknoteArrowUp size={17} /> Deposit
             </button>
-            <button type="button" onClick={() => router.push("/withdraw")} className="rounded-xl bg-primary py-2.5 text-sm font-medium text-primary-foreground">
-              Withdraw
+            <button type="button" onClick={() => router.push("/withdraw")} className="dashboard-control flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium">
+              <BanknoteArrowDown size={17} /> Withdraw
             </button>
           </div>
         </div>
 
         <h2 className="mb-2 text-base font-medium">Quick Actions</h2>
         <div className="mb-6 grid grid-cols-3 gap-3">
-          <ActionTile href="/deposit" iconSrc="/icons/recharge.png" label="Deposit" />
-          <ActionTile href="/withdraw" iconSrc="/icons/withdrawal.png" label="Withdraw" />
-          <ActionTile href="/team" iconSrc="/icons/referral.png" label="Referral" />
-          <ActionTile href="/products" iconSrc="/icons/products.png" label="Products" />
-          <ActionTile href="/about" iconSrc="/icons/company.png" label="About" />
-          <ActionTile href="/investments" iconSrc="/icons/investments.png" label="My Plans" />
+          <ActionTile href="/deposit" icon={<BanknoteArrowUp size={23} strokeWidth={1.8} />} label="Deposit" />
+          <ActionTile href="/withdraw" icon={<BanknoteArrowDown size={23} strokeWidth={1.8} />} label="Withdraw" />
+          <ActionTile href="/team" icon={<Users size={23} strokeWidth={1.8} />} label="Referral" />
+          <ActionTile href="/products" icon={<Box size={23} strokeWidth={1.8} />} label="Products" />
+          <ActionTile href="/about" icon={<Info size={23} strokeWidth={1.8} />} label="About" />
+          <ActionTile href="/investments" icon={<BarChart size={23} strokeWidth={1.8} />} label="My Plans" />
         </div>
 
         <h2 className="mb-2 text-base font-medium">Support</h2>
         <div className="mb-6 grid grid-cols-3 gap-3">
-          <ActionTile onClick={() => setSheet("table")} icon={<CalendarDays />} label="Plan Table" />
-          {support ? <ActionTile href={support} icon={<Send />} label="Support" /> : null}
-          {group ? <ActionTile href={group} icon={<Info />} label="WhatsApp Community" /> : null}
+          <ActionTile onClick={() => setSheet("table")} icon={<CalendarDays size={23} strokeWidth={1.8} />} label="Plan Table" />
+          {support ? <ActionTile href={support} icon={<Send size={23} strokeWidth={1.8} />} label="Support" /> : null}
+          {group ? <ActionTile href={group} icon={<Users size={23} strokeWidth={1.8} />} label="WhatsApp Community" /> : null}
         </div>
         {!support && !group ? <p className="mb-6 text-xs text-muted-foreground">Support contact details are not configured yet.</p> : null}
 
         <h2 className="mb-2 text-base font-medium">Account</h2>
         <div className="mb-6 grid grid-cols-3 gap-3">
-          <ActionTile onClick={openIncome} icon={<History />} label="Income History" />
-          <ActionTile onClick={openWithdraw} icon={<History />} label="Withdrawal History" />
-          <ActionTile onClick={() => setSheet("password")} icon={<KeyRound />} label="Change Password" />
-          <ActionTile onClick={installApp} icon={<Download />} label="Download App" />
+          <ActionTile onClick={openIncome} icon={<History size={23} strokeWidth={1.8} />} label="Income History" />
+          <ActionTile onClick={openWithdraw} icon={<History size={23} strokeWidth={1.8} />} label="Withdrawal History" />
+          <ActionTile onClick={() => setSheet("password")} icon={<KeyRound size={23} strokeWidth={1.8} />} label="Change Password" />
+          <ActionTile onClick={installApp} icon={<Download size={23} strokeWidth={1.8} />} label="Download App" />
         </div>
 
         <h2 className="mb-2 text-base font-medium">Success Stories</h2>
