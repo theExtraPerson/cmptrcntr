@@ -330,31 +330,49 @@ function WithdrawalsTab() {
           <p>
             {ugx(w.amount)} • fee {ugx(w.fee)} • net {ugx(w.net_amount)}
           </p>
-          <p className="text-xs text-muted-foreground">{w.phone_number} • {w.mode} {w.provider || ""}</p>
+                <p className="text-xs text-muted-foreground">
+                  {w.phone_number} • {w.status === "PENDING" ? "Payout method not selected" : `${w.mode} ${w.provider || ""}`}
+                </p>
           {w.failure_reason ? <p className="text-xs text-amber-700">{w.failure_reason}</p> : null}
           {w.status === "PENDING" ? (
-            <div className="flex gap-2">
+                  <div className="grid grid-cols-2 gap-2">
               <button
-                className="flex-1 rounded-xl bg-primary py-2 text-primary-foreground"
+                      className="rounded-xl bg-primary py-2 text-sm text-primary-foreground"
                 type="button"
                 onClick={async () => {
                   try {
-                    const result = await api(`/api/admin/payments/${w.id}`, { method: "POST", body: JSON.stringify({ action: "approve" }) });
-                    if (w.mode === "MARZPAY" && result.payment?.status !== "PROCESSING" && result.payment?.status !== "SUCCESS") {
+                          const result = await api(`/api/admin/payments/${w.id}`, { method: "POST", body: JSON.stringify({ action: "approve-marzpay" }) });
+                          if (result.payment?.status !== "PROCESSING" && result.payment?.status !== "SUCCESS") {
                       toast.error(result.payment?.failure_reason || "Payout could not be submitted.");
                     } else {
-                      toast.success(w.mode === "MARZPAY" ? "MarzPay payout submitted" : "Withdrawal marked paid");
+                            toast.success("MarzPay payout submitted");
                     }
                     await load();
                   } catch (err) {
-                    toast.error(err instanceof Error ? err.message : "Could not approve withdrawal");
+                          toast.error(err instanceof Error ? err.message : "Could not send via MarzPay");
                   }
                 }}
               >
-                Approve
+                      Pay via MarzPay
+                    </button>
+                    <button
+                      className="rounded-xl border py-2 text-sm"
+                      type="button"
+                      onClick={async () => {
+                        if (!window.confirm(`Confirm you sent ${ugx(w.net_amount)} manually to ${w.phone_number}?`)) return;
+                        try {
+                          await api(`/api/admin/payments/${w.id}`, { method: "POST", body: JSON.stringify({ action: "approve-manual" }) });
+                          toast.success("Manual withdrawal recorded as paid");
+                          await load();
+                        } catch (err) {
+                          toast.error(err instanceof Error ? err.message : "Could not record manual payment");
+                        }
+                      }}
+                    >
+                      Mark manual paid
               </button>
               <button
-                className="flex-1 rounded-xl bg-primary py-2 text-primary-foreground"
+                      className="col-span-2 rounded-xl border py-2 text-sm"
                 type="button"
                 onClick={async () => {
                   try {
@@ -825,7 +843,11 @@ function SettingsTab() {
       .select("key,value")
       .then(({ data }) => {
         const next: Record<string, string> = {};
-        for (const row of data ?? []) next[row.key] = row.value;
+        for (const row of data ?? []) {
+          if (!["referral_percent", "mtn_number", "mtn_name", "airtel_number", "airtel_name"].includes(row.key)) {
+            next[row.key] = row.value;
+          }
+        }
         setMap(next);
       });
   }, []);

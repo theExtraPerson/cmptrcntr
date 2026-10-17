@@ -9,12 +9,13 @@ import { Modal } from "@/components/Modal";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { api } from "@/lib/api";
+import { MIN_WITHDRAWAL } from "@/lib/platform";
 import { getSupabase, ugx } from "@/lib/supabase";
 import type { Payment } from "@/lib/types";
 
 function nowInHours(start: string, end: string) {
   const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Africa/Nairobi",
+    timeZone: "Africa/Kampala",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
@@ -36,11 +37,11 @@ export default function WithdrawPage() {
     if (profile?.phone) setPhone(profile.phone);
   }, [profile?.phone]);
 
-  const min = Number(settings.min_withdrawal || 2000);
+  const min = Math.max(Number(settings.min_withdrawal || MIN_WITHDRAWAL), MIN_WITHDRAWAL);
   const max = Number(settings.max_withdrawal || 5000000);
   const feePct = Number(settings.withdraw_fee_percent || 20);
-  const start = settings.withdraw_start_time || "09:00";
-  const end = settings.withdraw_end_time || "23:00";
+  const start = settings.withdraw_start_time || "21:00";
+  const end = settings.withdraw_end_time || "22:00";
   const open = nowInHours(start, end);
   const n = Number(amount);
   const fee = Number.isFinite(n) ? Math.round((n * feePct) / 100) : 0;
@@ -131,13 +132,14 @@ export default function WithdrawPage() {
         <div className="card-elevated space-y-2 p-4 text-sm text-muted-foreground">
           <p className="font-medium text-foreground">Withdrawal terms</p>
           <p>
-            Withdrawal requests are subject to the displayed fees, processing hours, account verification, and
-            administrator review. Only available wallet funds can be requested; plan earnings and any capital return
-            are not available until the plan duration ends and a final payout is approved.
+            You may request one withdrawal of at least {ugx(min)} per Kampala calendar day. Pending requests carry
+            forward for administrator review and do not prevent a new request the next day. Only available wallet
+            funds can be requested; plan earnings and any capital return are not available until the plan duration
+            ends and a final payout is approved.
           </p>
         </div>
         <div className={`rounded-2xl border p-4 ${open ? "border-primary/40 bg-primary/5" : "border-red-400/40 bg-red-500/10"}`}>
-          <p className="font-medium">Withdrawal Hours: {start} - {end}</p>
+          <p className="font-medium">Withdrawal Hours (Kampala): {start} - {end}</p>
           <p className="text-sm text-muted-foreground">{open ? "Withdrawals are open" : "Withdrawals are currently closed"}</p>
         </div>
         <div className="card-elevated p-4">

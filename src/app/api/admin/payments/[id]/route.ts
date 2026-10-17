@@ -62,8 +62,11 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       return jsonError("Confirm the payment status with MarzPay before resolving it.");
     }
 
-    if (action !== "approve") return jsonError("Invalid action.");
+    if (!["approve", "approve-manual", "approve-marzpay"].includes(action)) {
+      return jsonError("Invalid action.");
+    }
     if (payment.type === "DEPOSIT") {
+      if (action !== "approve") return jsonError("Invalid action.");
       if (payment.mode !== "MANUAL") {
         return jsonError("MarzPay deposits are settled only after provider confirmation.");
       }
@@ -71,14 +74,30 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       return NextResponse.json({ ok: true, result });
     }
 
-    if (payment.mode === "MARZPAY") {
+    const payoutMode = action === "approve-manual"
+      ? "MANUAL"
+      : action === "approve-marzpay"
+        ? "MARZPAY"
+        : payment.mode;
+    if (payoutMode === "MARZPAY") {
+      if (payment.mode !== "MARZPAY") {
+        const { data: updated, error: modeError } = await admin
+          .from("payments")
+          .update({ mode: "MARZPAY" })
+          .eq("id", payment.id)
+          .eq("status", "PENDING")
+          .select("id")
+          .maybeSingle();
+        if (modeError) return jsonError(modeError.message, 500);
+        if (!updated) return jsonError("Withdrawal is no longer pending.");
+      }
       const updated = await dispatchWithdrawal(admin, payment.id, { approvedBy: user.id });
       return NextResponse.json({ ok: true, payment: updated });
     }
 
     const { data: reviewed, error: updateError } = await admin
       .from("payments")
-      .update({ reviewed_by: user.id, reviewed_at: new Date().toISOString() })
+      .update({ mode: "MANUAL", reviewed_by: user.id, reviewed_at: new Date().toISOString() })
       .eq("id", payment.id)
       .eq("status", "PENDING")
       .select("id")

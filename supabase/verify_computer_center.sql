@@ -18,6 +18,7 @@ declare
   ];
   required_functions text[] := array[
     'public.settle_payment(uuid,boolean,text,text,uuid)',
+    'public.request_payment_withdraw(uuid,numeric,numeric,numeric,text,text)',
     'public.credit_referral_commissions(uuid,numeric,uuid)',
     'public.prepare_investment_payouts(uuid)',
     'public.review_investment_payout(uuid,uuid)',
@@ -61,6 +62,13 @@ begin
     'EXECUTE'
   ) then
     raise exception 'service_role must be able to execute public.settle_payment';
+  end if;
+
+  if not exists (
+    select 1 from public.platform_settings
+    where key = 'min_withdrawal' and value::numeric >= 30000
+  ) then
+    raise exception 'Minimum withdrawal must be at least UGX 30,000';
   end if;
 
   if exists (

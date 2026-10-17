@@ -12,17 +12,17 @@ import { getSupabase, usernameToEmail } from "@/lib/supabase";
 function RegisterForm() {
   const router = useRouter();
   const params = useSearchParams();
+  const referralParam = (params.get("ref") ?? "").trim().toUpperCase();
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [referral, setReferral] = useState(params.get("ref") || "");
+  const [referral, setReferral] = useState(referralParam);
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const referralCode = params.get("ref");
-    if (referralCode) setReferral(referralCode.trim().toUpperCase());
-  }, [params]);
+    if (referralParam) setReferral(referralParam);
+  }, [referralParam]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,23 +54,23 @@ function RegisterForm() {
       <label className="block text-sm">
         Username
         <div className="relative mt-1">
-          <User size={16} className="absolute left-3 top-3.5 text-muted-foreground" />
-          <input className="input-field pl-9" placeholder="Enter username" required value={username} onChange={(e) => setUsername(e.target.value)} />
+          <User size={16} className="absolute left-4 top-3.5 text-muted-foreground" />
+          <input className="input-field py-3.5 pl-12" placeholder="Enter username" required value={username} onChange={(e) => setUsername(e.target.value)} />
         </div>
       </label>
       <label className="block text-sm">
         Phone Number
         <div className="relative mt-1">
-          <Phone size={16} className="absolute left-3 top-3.5 text-muted-foreground" />
-          <input className="input-field pl-9" placeholder="0700000000" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <Phone size={16} className="absolute left-4 top-3.5 text-muted-foreground" />
+          <input className="input-field py-3.5 pl-12" placeholder="0700000000" required value={phone} onChange={(e) => setPhone(e.target.value)} />
         </div>
       </label>
       <label className="block text-sm">
         Password
         <div className="relative mt-1">
-          <Lock size={16} className="absolute left-3 top-3.5 text-muted-foreground" />
+          <Lock size={16} className="absolute left-4 top-3.5 text-muted-foreground" />
           <input
-            className="input-field pl-9 pr-10"
+            className="input-field py-3.5 pl-12 pr-12"
             type={show ? "text" : "password"}
             placeholder="••••••••"
             required
@@ -85,7 +85,7 @@ function RegisterForm() {
       <label className="block text-sm">
         Referral Code (optional)
         <input
-          className="input-field mt-1 uppercase"
+          className="input-field mt-1 py-3.5 uppercase"
           placeholder="Enter referral code"
           autoComplete="off"
           value={referral}

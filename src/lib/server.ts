@@ -57,10 +57,10 @@ export function settingNum(settings: Record<string, string>, key: string, fallba
 }
 
 export function isWithinWithdrawHours(settings: Record<string, string>, now = new Date()) {
-  const start = settings.withdraw_start_time || "09:00";
-  const end = settings.withdraw_end_time || "23:00";
+  const start = settings.withdraw_start_time || "21:00";
+  const end = settings.withdraw_end_time || "22:00";
   const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Africa/Nairobi",
+    timeZone: "Africa/Kampala",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,

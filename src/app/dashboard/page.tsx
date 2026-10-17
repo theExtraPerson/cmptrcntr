@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  BarChart,
   CalendarDays,
   Download,
   History,
@@ -11,10 +10,6 @@ import {
   KeyRound,
   RefreshCw,
   Send,
-  Box,
-  Users,
-  BanknoteArrowUp,
-  BanknoteArrowDown,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -222,12 +217,12 @@ export default function DashboardPage() {
 
         <h2 className="mb-2 text-base font-medium">Quick Actions</h2>
         <div className="mb-6 grid grid-cols-3 gap-3">
-          <ActionTile href="/deposit" icon={<BanknoteArrowUp />} label="Deposit" />
-          <ActionTile href="/withdraw" icon={<BanknoteArrowDown />} label="Withdraw" />
-          <ActionTile href="/team" icon={<Users />} label="Referral" />
-          <ActionTile href="/products" icon={<Box />} label="Products" />
-          <ActionTile href="/about" icon={<Info />} label="About" />
-          <ActionTile href="/investments" icon={<BarChart />} label="My Plans" />
+          <ActionTile href="/deposit" iconSrc="/icons/recharge.png" label="Deposit" />
+          <ActionTile href="/withdraw" iconSrc="/icons/withdrawal.png" label="Withdraw" />
+          <ActionTile href="/team" iconSrc="/icons/referral.png" label="Referral" />
+          <ActionTile href="/products" iconSrc="/icons/products.png" label="Products" />
+          <ActionTile href="/about" iconSrc="/icons/company.png" label="About" />
+          <ActionTile href="/investments" iconSrc="/icons/investments.png" label="My Plans" />
         </div>
 
         <h2 className="mb-2 text-base font-medium">Support</h2>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getUserFromRequest, getSettingsMap, isWithinWithdrawHours, jsonError, settingNum } from "@/lib/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { detectProvider, toMsisdn } from "@/lib/phone";
+import { MIN_WITHDRAWAL } from "@/lib/platform";
 import type { Payment } from "@/lib/types";
 
 export async function POST(req: Request) {
@@ -21,11 +22,11 @@ export async function POST(req: Request) {
   const settings = await getSettingsMap();
   if (!isWithinWithdrawHours(settings)) {
     return jsonError(
-      `Withdrawals are currently closed. Hours: ${settings.withdraw_start_time || "09:00"} - ${settings.withdraw_end_time || "23:00"}`,
+      `Withdrawals are currently closed. Hours: ${settings.withdraw_start_time || "21:00"} - ${settings.withdraw_end_time || "22:00"}`,
     );
   }
 
-  const min = settingNum(settings, "min_withdrawal", 2_000);
+  const min = Math.max(settingNum(settings, "min_withdrawal", MIN_WITHDRAWAL), MIN_WITHDRAWAL);
   const max = settingNum(settings, "max_withdrawal", 5_000_000);
   const feePct = settingNum(settings, "withdraw_fee_percent", 20);
   if (amount < min || amount > max) {

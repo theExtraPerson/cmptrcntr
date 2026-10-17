@@ -101,7 +101,10 @@ export default function TeamPage() {
     void refresh();
   }, [refresh]);
 
-  const link = `${origin}/register?ref=${encodeURIComponent(profile?.referral_code || "")}`;
+  const referralCode = (profile?.referral_code ?? "").trim().toUpperCase();
+  const link = origin && referralCode
+    ? `${origin}/register?ref=${encodeURIComponent(referralCode)}`
+    : "";
   const directCount = refs.filter((member) => member.level === 1).length;
   const secondLevelCount = refs.filter((member) => member.level === 2).length;
 
@@ -156,7 +159,7 @@ export default function TeamPage() {
           <p className="mb-2 text-sm font-medium">Referral Link</p>
           <div className="flex gap-2">
             <input className="input-field" readOnly value={link} />
-            <button type="button" className="gradient-mint rounded-xl px-3 text-white" onClick={() => copy(link)}>
+            <button type="button" disabled={!link} className="gradient-mint rounded-xl px-3 text-white disabled:opacity-40" onClick={() => copy(link)}>
               <Copy size={16} />
             </button>
           </div>
@@ -164,11 +167,12 @@ export default function TeamPage() {
         <div className="card-elevated p-4">
           <p className="mb-2 text-sm font-medium">Referral Code</p>
           <div className="flex gap-2">
-            <input className="input-field text-center tracking-widest" readOnly value={profile?.referral_code || ""} />
+            <input className="input-field text-center tracking-widest" readOnly value={referralCode} />
             <button
               type="button"
-              className="gradient-mint rounded-xl px-3 text-white"
-              onClick={() => copy(profile?.referral_code || "")}
+              disabled={!referralCode}
+              className="gradient-mint rounded-xl px-3 text-white disabled:opacity-40"
+              onClick={() => copy(referralCode)}
             >
               <Copy size={16} />
             </button>

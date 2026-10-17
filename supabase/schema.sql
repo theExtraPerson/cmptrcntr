@@ -783,21 +783,16 @@ grant execute on function public.adjust_user_balance(uuid, numeric) to service_r
 insert into public.platform_settings (key, value) values
   ('welcome_popup_enabled', 'true'),
   ('welcome_popup_message', 'Welcome to Computer Center. Review the partnership terms, business risks, and plan conditions before participating.'),
-  ('mtn_number', '0792451776'),
-  ('mtn_name', 'Simon Okellet'),
-  ('airtel_number', '0707626840'),
-  ('airtel_name', 'Lydia Nakisige'),
   ('min_deposit', '5000'),
   ('max_deposit', '5000000'),
-  ('min_withdrawal', '2000'),
+  ('min_withdrawal', '30000'),
   ('max_withdrawal', '5000000'),
   ('withdraw_fee_percent', '20'),
-  ('withdraw_start_time', '09:00'),
-  ('withdraw_end_time', '23:00'),
+  ('withdraw_start_time', '21:00'),
+  ('withdraw_end_time', '22:00'),
   ('telegram_support', 'https://t.me/+256704057716'),
   ('whatsapp_group', 'https://chat.whatsapp.com/BaxNRCmfLKO9OJIPpRDbbA'),
   ('force_refresh_timestamp', '0'),
-  ('referral_percent', '5'),
   ('referral_level_1_percent', '5'),
   ('referral_level_2_percent', '1')
 on conflict (key) do nothing;
@@ -861,4 +856,6 @@ update public.platform_settings
   set value = 'Welcome to Computer Center. Review the partnership terms, business risks, and plan conditions before participating.'
   where key = 'welcome_popup_message';
 update public.platform_settings set value = '20' where key = 'withdraw_fee_percent';
-update public.platform_settings set value = '23:00' where key = 'withdraw_end_time';
+update public.platform_settings set value = '30000' where key = 'min_withdrawal';
+update public.platform_settings set value = '21:00' where key = 'withdraw_start_time';
+update public.platform_settings set value = '22:00' where key = 'withdraw_end_time';
