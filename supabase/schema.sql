@@ -1,8 +1,7 @@
 -- Computer Center schema
--- Run this in the Supabase SQL editor after creating a project.
--- Then run marzpay_payments.sql to add the unified MarzPay payment ledger.
--- Existing installations: run product_catalog_migration.sql, marzpay_payments.sql,
--- referral_levels_migration.sql, then investment_eligibility_migration.sql.
+-- Fresh-install and upgrade instructions: see supabase/README.md.
+-- This file is the core schema; payment, referral-level, and final-payout
+-- objects are installed by the ordered scripts listed in that runbook.
 -- Also disable email confirmation: Authentication → Providers → Email → Confirm email OFF
 --
 -- After you register the first admin account:

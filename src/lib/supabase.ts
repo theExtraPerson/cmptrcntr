@@ -1,7 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 export function usernameToEmail(username: string) {
-  return `${username.toLowerCase().replace(/\s+/g, "")}@vivianfi.app`;
+  return `${username.toLowerCase().replace(/\s+/g, "")}@cmptrcntr.app`;
 }
 
 export function ugx(amount: number | string | null | undefined) {

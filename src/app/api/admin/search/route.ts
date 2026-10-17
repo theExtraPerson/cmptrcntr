@@ -14,7 +14,7 @@ export async function GET(req: Request) {
       columns.map((column) =>
         admin
           .from("payments")
-          .select("*, profiles(username, phone)")
+          .select("*, profiles:profiles!payments_user_id_fkey(username, phone)")
           .eq("type", type)
           .ilike(column, `%${q}%`)
           .limit(20),

@@ -225,7 +225,7 @@ export function readMarzSnapshot(raw: unknown): MarzSnapshot {
 export interface MarzCallInput {
   /** Integer whole UGX. */
   amount: number;
-  /** MSISDN, 2567XXXXXXXX. */
+  /** E.164 Ugandan number, +2567XXXXXXXX. */
   phone: string;
   /** Fresh UUID v4 per transaction. */
   reference: string;

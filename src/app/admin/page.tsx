@@ -208,7 +208,7 @@ function DepositsTab() {
   const load = useCallback(async () => {
     let query = getSupabase()
       .from("payments")
-      .select("*, profiles(username, phone)")
+      .select("*, profiles:profiles!payments_user_id_fkey(username, phone)")
       .eq("type", "DEPOSIT")
       .order("created_at", { ascending: false })
       .limit(100);
@@ -305,7 +305,7 @@ function WithdrawalsTab() {
   const load = useCallback(async () => {
     const { data, error } = await getSupabase()
       .from("payments")
-      .select("*, profiles(username, phone)")
+      .select("*, profiles:profiles!payments_user_id_fkey(username, phone)")
       .eq("type", "WITHDRAWAL")
       .order("created_at", { ascending: false })
       .limit(100);

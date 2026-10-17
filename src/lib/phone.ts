@@ -9,7 +9,7 @@ export function toMsisdn(value: string): string | null {
 export function toE164(value: string): string {
   const msisdn = toMsisdn(value);
   if (!msisdn) throw new Error("Enter a valid Ugandan mobile number.");
-  return msisdn;
+  return `+${msisdn}`;
 }
 
 export function detectProvider(value: string): "MTN" | "AIRTEL" | null {
