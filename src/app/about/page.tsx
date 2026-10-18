@@ -26,7 +26,7 @@ const steps = [
   {
     title: "Request eligible withdrawals",
     description:
-      "After the plan duration ends, eligible plan earnings and any applicable capital return accumulate toward a final payout. No daily withdrawals are made from active plans. Wallet withdrawals have a minimum of UGX 30,000, are limited to one request per Kampala calendar day, and pending requests carry forward for review.",
+      "After the plan duration ends, eligible plan earnings and any applicable capital return accumulate toward a final payout. No daily withdrawals are made from active plans. Wallet withdrawals have a minimum of UGX 3,000, are available from 09:00 to 22:00 EAT, are limited to one request per EAT calendar day, and pending requests carry forward for review.",
   },
 ];
 

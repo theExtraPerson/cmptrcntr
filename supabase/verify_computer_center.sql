@@ -66,9 +66,9 @@ begin
 
   if not exists (
     select 1 from public.platform_settings
-    where key = 'min_withdrawal' and value::numeric >= 30000
+    where key = 'min_withdrawal' and value::numeric >= 3000
   ) then
-    raise exception 'Minimum withdrawal must be at least UGX 30,000';
+    raise exception 'Minimum withdrawal must be at least UGX 3,000';
   end if;
 
   if exists (

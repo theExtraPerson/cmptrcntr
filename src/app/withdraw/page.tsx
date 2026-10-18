@@ -9,20 +9,9 @@ import { Modal } from "@/components/Modal";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { api } from "@/lib/api";
-import { MIN_WITHDRAWAL } from "@/lib/platform";
+import { MIN_WITHDRAWAL, WITHDRAWAL_END_TIME, WITHDRAWAL_START_TIME } from "@/lib/platform";
 import { getSupabase, ugx } from "@/lib/supabase";
 import type { Payment } from "@/lib/types";
-
-function nowInHours(start: string, end: string) {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Africa/Kampala",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(new Date());
-  const cur = `${parts.find((p) => p.type === "hour")?.value}:${parts.find((p) => p.type === "minute")?.value}`;
-  return cur >= start && cur <= end;
-}
 
 export default function WithdrawPage() {
   const { profile, settings, refresh } = useAuth();
@@ -32,17 +21,43 @@ export default function WithdrawPage() {
   const [history, setHistory] = useState<Payment[]>([]);
   const [openHist, setOpenHist] = useState(false);
   const [activePaymentId, setActivePaymentId] = useState<string | null>(null);
+  const [withdrawalStatus, setWithdrawalStatus] = useState<{
+    isOpen: boolean;
+    eatTime: string;
+    start: string;
+    end: string;
+  } | null>(null);
 
   useEffect(() => {
     if (profile?.phone) setPhone(profile.phone);
   }, [profile?.phone]);
 
+  useEffect(() => {
+    let stopped = false;
+    const updateStatus = () => {
+      void api("/api/withdrawals")
+        .then((status: { isOpen: boolean; eatTime: string; start: string; end: string }) => {
+          if (!stopped) setWithdrawalStatus(status);
+        })
+        .catch((err: unknown) => {
+          if (stopped) return;
+          toast.error(err instanceof Error ? err.message : "Could not check withdrawal hours.");
+        });
+    };
+    updateStatus();
+    const timer = window.setInterval(updateStatus, 30_000);
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+    };
+  }, []);
+
   const min = Math.max(Number(settings.min_withdrawal || MIN_WITHDRAWAL), MIN_WITHDRAWAL);
   const max = Number(settings.max_withdrawal || 5000000);
   const feePct = Number(settings.withdraw_fee_percent || 20);
-  const start = settings.withdraw_start_time || "21:00";
-  const end = settings.withdraw_end_time || "22:00";
-  const open = nowInHours(start, end);
+  const start = withdrawalStatus?.start ?? WITHDRAWAL_START_TIME;
+  const end = withdrawalStatus?.end ?? WITHDRAWAL_END_TIME;
+  const open = withdrawalStatus?.isOpen ?? false;
   const n = Number(amount);
   const fee = Number.isFinite(n) ? Math.round((n * feePct) / 100) : 0;
   const net = Number.isFinite(n) ? n - fee : 0;
@@ -132,14 +147,17 @@ export default function WithdrawPage() {
         <div className="card-elevated space-y-2 p-4 text-sm text-muted-foreground">
           <p className="font-medium text-foreground">Withdrawal terms</p>
           <p>
-            You may request one withdrawal of at least {ugx(min)} per Kampala calendar day. Pending requests carry
+            You may request one withdrawal of at least {ugx(min)} per EAT calendar day. Pending requests carry
             forward for administrator review and do not prevent a new request the next day. Only available wallet
             funds can be requested.
           </p>
         </div>
         <div className={`rounded-2xl border p-4 ${open ? "border-primary/40 bg-primary/5" : "border-red-400/40 bg-red-500/10"}`}>
-          <p className="font-medium">Withdrawal Hours (Kampala): {start} - {end}</p>
-          <p className="text-sm text-muted-foreground">{open ? "Withdrawals are open" : "Withdrawals are currently closed"}</p>
+          <p className="font-medium">Withdrawal Hours (EAT): {start} - {end}</p>
+          <p className="text-sm text-muted-foreground">
+            {withdrawalStatus ? `Server time: ${withdrawalStatus.eatTime} EAT · ` : ""}
+            {withdrawalStatus ? (open ? "Withdrawals are open" : "Withdrawals are currently closed") : "Checking server time…"}
+          </p>
         </div>
         <div className="card-elevated p-4">
           <label className="text-sm">
@@ -157,7 +175,7 @@ export default function WithdrawPage() {
             <input className="input-field mt-1" placeholder="Input phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </label>
         </div>
-        <button disabled={!canSubmit || busy} onClick={submit} className="btn-gradient w-full rounded-xl py-3 disabled:opacity-40">
+        <button disabled={!canSubmit || busy || !withdrawalStatus} onClick={submit} className="btn-gradient w-full rounded-xl py-3 disabled:opacity-40">
           {busy ? "Submitting…" : "Request withdrawal"}
         </button>
       </div>

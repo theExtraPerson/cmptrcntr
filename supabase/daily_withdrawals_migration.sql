@@ -1,18 +1,17 @@
--- Enforce one withdrawal request per Kampala calendar day and a UGX 30,000 minimum.
+-- Enforce one withdrawal request per EAT calendar day and a UGX 3,000 minimum.
 -- Apply after marzpay_payments.sql.
 begin;
 
 insert into public.platform_settings (key, value)
 values ('min_withdrawal', '3000')
 on conflict (key) do update
-set value = greatest(coalesce(nullif(public.platform_settings.value, '')::numeric, 0), 3000)::text,
-    updated_at = now();
+set value = excluded.value, updated_at = now();
 
 delete from public.platform_settings
 where key in ('mtn_number', 'mtn_name', 'airtel_number', 'airtel_name');
 
 insert into public.platform_settings (key, value)
-values ('withdraw_start_time', '21:00'), ('withdraw_end_time', '22:00')
+values ('withdraw_start_time', '09:00'), ('withdraw_end_time', '22:00')
 on conflict (key) do update
 set value = excluded.value, updated_at = now();
 
@@ -33,7 +32,7 @@ declare
   current_balance numeric;
   payment_id uuid;
   request_time timestamptz;
-  kampala_day date;
+  eat_day date;
   day_start timestamptz;
   next_day_start timestamptz;
 begin
@@ -54,9 +53,9 @@ begin
   if not found then raise exception 'Profile not found or account unavailable'; end if;
 
   request_time := clock_timestamp();
-  kampala_day := (request_time at time zone 'Africa/Kampala')::date;
-  day_start := kampala_day::timestamp at time zone 'Africa/Kampala';
-  next_day_start := (kampala_day + 1)::timestamp at time zone 'Africa/Kampala';
+  eat_day := (request_time at time zone 'UTC' + interval '3 hours')::date;
+  day_start := (eat_day::timestamp - interval '3 hours') at time zone 'UTC';
+  next_day_start := ((eat_day + 1)::timestamp - interval '3 hours') at time zone 'UTC';
 
   if exists (
     select 1
@@ -66,7 +65,7 @@ begin
       and payment.created_at >= day_start
       and payment.created_at < next_day_start
   ) then
-    raise exception 'Only one withdrawal request is allowed per Kampala calendar day';
+    raise exception 'Only one withdrawal request is allowed per EAT calendar day';
   end if;
 
   if current_balance < p_amount then raise exception 'Insufficient balance'; end if;

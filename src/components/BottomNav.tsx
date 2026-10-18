@@ -2,29 +2,62 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ShoppingBag, Users } from "lucide-react";
+import { Download, Home, ShoppingBag, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-const items = [
-  { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/products", label: "Plans", icon: ShoppingBag },
-  { href: "/team", label: "My Team", icon: Users },
-];
+type InstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
 
 export function BottomNav() {
   const path = usePathname();
+  const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as InstallPromptEvent);
+    };
+    const handleAppInstalled = () => setInstallPrompt(null);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
+
+  async function installApp() {
+    if (!installPrompt) {
+      toast("Use your browser menu and choose 'Install Computer Center' or 'Add to Home screen'.");
+      return;
+    }
+    await installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+  }
+
   return (
     <nav className="bottom-nav mx-auto max-w-md">
-      <div className="grid grid-cols-3">
-        {items.map((item) => {
-          const active = path === item.href || (item.href !== "/dashboard" && path.startsWith(item.href));
-          const Icon = item.icon;
-          return (
-            <Link key={item.href} href={item.href} className={`bottom-nav-item ${active ? "active" : ""}`}>
-              <Icon size={22} />
-              <span className="text-xs font-medium">{item.label}</span>
-            </Link>
-          );
-        })}
+      <div className="grid grid-cols-4">
+        <Link href="/dashboard" className={`bottom-nav-item ${path === "/dashboard" ? "active" : ""}`}>
+          <Home size={22} />
+          <span className="text-xs font-medium">Dashboard</span>
+        </Link>
+        <Link href="/products" className={`bottom-nav-item ${path.startsWith("/products") ? "active" : ""}`}>
+          <ShoppingBag size={22} />
+          <span className="text-xs font-medium">Plans</span>
+        </Link>
+        <Link href="/team" className={`bottom-nav-item ${path.startsWith("/team") ? "active" : ""}`}>
+          <Users size={22} />
+          <span className="text-xs font-medium">My Team</span>
+        </Link>
+        <button type="button" onClick={() => void installApp()} className="bottom-nav-item">
+          <Download size={22} />
+          <span className="text-xs font-medium">Download</span>
+        </button>
       </div>
     </nav>
   );

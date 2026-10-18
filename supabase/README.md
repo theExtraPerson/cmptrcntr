@@ -8,11 +8,12 @@ Use the SQL Editor in the Supabase project, or run the files with `psql` in the 
 2. Run `schema.sql`.
 3. Run `marzpay_payments.sql`.
 4. Run `daily_withdrawals_migration.sql`.
-5. Run `referral_levels_migration.sql`.
-6. Run `investment_eligibility_migration.sql`.
-7. Run `verify_computer_center.sql`; all assertions must pass.
-8. Register the first account, then grant it admin access using the SQL snippet below.
-9. Configure the application environment variables from `.env.example`, including the production HTTPS `NEXT_PUBLIC_SITE_URL` and MarzPay credentials.
+5. Run `withdrawal_eat_policy_migration.sql`.
+6. Run `referral_levels_migration.sql`.
+7. Run `investment_eligibility_migration.sql`.
+8. Run `verify_computer_center.sql`; all assertions must pass.
+9. Register the first account, then grant it admin access using the SQL snippet below.
+10. Configure the application environment variables from `.env.example`, including the production HTTPS `NEXT_PUBLIC_SITE_URL` and MarzPay credentials.
 
 `product_catalog_migration.sql` is not part of the fresh-project path: `schema.sql` already creates the product columns, seeds the current catalogue, and defines product purchase behavior.
 
@@ -22,11 +23,12 @@ Use the SQL Editor in the Supabase project, or run the files with `psql` in the 
 2. Confirm the core tables from `schema.sql` already exist (`profiles`, `platform_settings`, `investment_products`, `user_investments`, and `income_history`). If they do not, stop and reconcile the database lineage before applying an upgrade.
 3. Run `product_catalog_migration.sql`.
 4. Run `marzpay_payments.sql`. This adds the payment ledger and copies legacy deposit/withdrawal rows into it without issuing new wallet credits.
-5. Run `daily_withdrawals_migration.sql` to enforce the UGX 30,000 minimum and one withdrawal request per Kampala calendar day.
-6. Run `referral_levels_migration.sql`.
-7. Run `investment_eligibility_migration.sql` to disable automatic daily wallet credits and enable end-of-term, admin-reviewed payouts.
-8. Run `verify_computer_center.sql`; all assertions must pass.
-9. Configure application environment variables and deploy the matching application version only after the database steps succeed.
+5. Run `daily_withdrawals_migration.sql` to enforce the UGX 3,000 minimum and one withdrawal request per EAT calendar day.
+6. Run `withdrawal_eat_policy_migration.sql` to normalize the withdrawal amount and hours on existing deployments.
+7. Run `referral_levels_migration.sql`.
+8. Run `investment_eligibility_migration.sql` to disable automatic daily wallet credits and enable end-of-term, admin-reviewed payouts.
+9. Run `verify_computer_center.sql`; all assertions must pass.
+10. Configure application environment variables and deploy the matching application version only after the database steps succeed.
 
 Run each file from top to bottom. Files containing an explicit `begin`/`commit` run their own transaction. If a script fails, do not continue to later steps; inspect the error and the current database state first. Supabase SQL Editor does not keep this repository's migration history, so record the completed script names and date with your deployment record.
 
@@ -52,5 +54,5 @@ on conflict (user_id, role) do nothing;
 - A product purchase debits the wallet and snapshots its plan terms.
 - Plan earnings and any listed capital return are not credited daily. After the full term, a final payout is queued for administrator eligibility review. It remains pending until approved; approval records the payout and credits the member wallet.
 - Withdrawal requests use the payment ledger and are subject to the configured procedures and administrator review.
-- Users may request one withdrawal per Kampala calendar day, with a UGX 30,000 minimum. Requests still pending at day-end carry forward and remain pending; they are not auto-approved or refunded.
+- Users may request one withdrawal per EAT calendar day, with a UGX 3,000 minimum, from 09:00 to 22:00 EAT. Requests still pending at day-end carry forward and remain pending; they are not auto-approved or refunded.
 - No provider-specific scheduled job is required by this database workflow. A plan's payout request is prepared when the member refreshes their account or an administrator opens the payout queue.

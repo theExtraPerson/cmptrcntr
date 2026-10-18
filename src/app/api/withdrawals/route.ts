@@ -1,9 +1,26 @@
 import { NextResponse } from "next/server";
-import { getUserFromRequest, getSettingsMap, isWithinWithdrawHours, jsonError, settingNum } from "@/lib/server";
+import { getUserFromRequest, getSettingsMap, eastAfricaTime, isWithinWithdrawHours, jsonError, settingNum } from "@/lib/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { detectProvider, toMsisdn } from "@/lib/phone";
-import { MIN_WITHDRAWAL } from "@/lib/platform";
+import { MIN_WITHDRAWAL, WITHDRAWAL_END_TIME, WITHDRAWAL_START_TIME } from "@/lib/platform";
 import type { Payment } from "@/lib/types";
+
+export async function GET(req: Request) {
+  const { user, error } = await getUserFromRequest(req);
+  if (!user) return jsonError(error || "Unauthorized", 401);
+
+  const serverTime = new Date();
+  return NextResponse.json(
+    {
+      serverTime: serverTime.toISOString(),
+      eatTime: eastAfricaTime(serverTime),
+      isOpen: isWithinWithdrawHours(serverTime),
+      start: WITHDRAWAL_START_TIME,
+      end: WITHDRAWAL_END_TIME,
+    },
+    { headers: { "Cache-Control": "no-store, max-age=0" } },
+  );
+}
 
 export async function POST(req: Request) {
   const { user, error } = await getUserFromRequest(req);
@@ -19,13 +36,13 @@ export async function POST(req: Request) {
 
   const provider = detectProvider(msisdn);
   if (!provider) return jsonError("This mobile network is not supported for withdrawals.");
-  const settings = await getSettingsMap();
-  if (!isWithinWithdrawHours(settings)) {
+  if (!isWithinWithdrawHours()) {
     return jsonError(
-      `Withdrawals are currently closed. Hours: ${settings.withdraw_start_time || "21:00"} - ${settings.withdraw_end_time || "22:00"}`,
+      `Withdrawals are currently closed. Hours: ${WITHDRAWAL_START_TIME} - ${WITHDRAWAL_END_TIME} EAT`,
     );
   }
 
+  const settings = await getSettingsMap();
   const min = Math.max(settingNum(settings, "min_withdrawal", MIN_WITHDRAWAL), MIN_WITHDRAWAL);
   const max = settingNum(settings, "max_withdrawal", 5_000_000);
   const feePct = settingNum(settings, "withdraw_fee_percent", 20);

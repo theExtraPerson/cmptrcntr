@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BottomNav } from "./BottomNav";
 import { useAuth } from "./AuthProvider";
 import { WelcomePopup } from "./WelcomePopup";
+import DashboardLoading from "@/app/dashboard/loading";
 
 export function AppShell({ children, admin }: { children: React.ReactNode; admin?: boolean }) {
   const { user, profile, loading, isAdmin } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (loading) return;
@@ -17,6 +19,7 @@ export function AppShell({ children, admin }: { children: React.ReactNode; admin
   }, [user, loading, isAdmin, admin, router]);
 
   if (loading || !user || !profile) {
+    if (pathname === "/dashboard") return <DashboardLoading />;
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">Loading…</div>
     );

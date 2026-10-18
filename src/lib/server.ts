@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { WITHDRAWAL_END_TIME, WITHDRAWAL_START_TIME } from "@/lib/platform";
 
 export function adminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -56,19 +57,17 @@ export function settingNum(settings: Record<string, string>, key: string, fallba
   return Number.isFinite(n) ? n : fallback;
 }
 
-export function isWithinWithdrawHours(settings: Record<string, string>, now = new Date()) {
-  const start = settings.withdraw_start_time || "21:00";
-  const end = settings.withdraw_end_time || "22:00";
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Africa/Kampala",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(now);
-  const hh = parts.find((p) => p.type === "hour")?.value ?? "00";
-  const mm = parts.find((p) => p.type === "minute")?.value ?? "00";
-  const cur = `${hh}:${mm}`;
-  return cur >= start && cur <= end;
+export function eastAfricaTime(now = new Date()) {
+  const eat = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+  return `${String(eat.getUTCHours()).padStart(2, "0")}:${String(eat.getUTCMinutes()).padStart(2, "0")}`;
+}
+
+export function isWithinWithdrawHours(now = new Date()) {
+  const [hours, minutes] = eastAfricaTime(now).split(":").map(Number);
+  const minuteOfDay = hours * 60 + minutes;
+  const [startHours, startMinutes] = WITHDRAWAL_START_TIME.split(":").map(Number);
+  const [endHours, endMinutes] = WITHDRAWAL_END_TIME.split(":").map(Number);
+  return minuteOfDay >= startHours * 60 + startMinutes && minuteOfDay < endHours * 60 + endMinutes;
 }
 
 export async function assertNotBanned(userId: string) {
