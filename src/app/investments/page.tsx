@@ -85,11 +85,11 @@ export default function InvestmentsPage() {
                 Plan schedule: {ugx(inv.daily_income)} per day for {inv.validity_days} days
               </p>
               <p className="text-xs text-muted-foreground">
-                No daily withdrawals. Potential earnings and any capital return are conditional on plan terms, business
-                results, and review.
+                Eligible daily rewards are credited at midnight East Africa Time. Potential earnings and any capital
+                return remain subject to plan terms and business results.
               </p>
               <p className="text-xs text-muted-foreground">
-                After the term ends, refresh your account to prepare the final payout request for admin review.
+                Any capital return is prepared for administrator review after the plan term and daily rewards are complete.
               </p>
               {payout ? (
                 <div className="mt-2 space-y-1 rounded-xl bg-secondary/60 p-3">
@@ -98,14 +98,14 @@ export default function InvestmentsPage() {
                     <StatusBadge status={payout.status} />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Eligible accumulated earnings: {ugx(payout.earnings_amount)}
+                    Daily plan earnings: {ugx(payout.earnings_amount)}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Potential capital return: {ugx(payout.capital_amount)}
                   </p>
                   {payout.status === "PENDING" ? (
                     <p className="text-xs text-muted-foreground">
-                      No funds are credited unless the final payout is approved.
+                      The capital return is credited only if the final payout is approved.
                     </p>
                   ) : null}
                 </div>

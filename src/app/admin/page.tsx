@@ -34,7 +34,13 @@ type InvestmentPayout = {
   capital_amount: number;
   created_at: string;
   profiles: { username: string; phone: string } | null;
-  user_investments: { product_name: string | null; amount: number; daily_income: number; validity_days: number } | null;
+  user_investments: {
+    product_name: string | null;
+    amount: number;
+    daily_income: number;
+    validity_days: number;
+    payouts_claimed: number;
+  } | null;
 };
 
 type Overview = {
@@ -477,7 +483,7 @@ function InvestmentPayoutsTab() {
       <div>
         <h3 className="font-medium">Final payout eligibility review</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          Review business results and applicable plan terms. Approval credits accumulated eligible earnings and any capital return; items remain pending until approved.
+          Daily plan earnings are credited at midnight EAT. Review any capital return after the plan term and all daily rewards are complete.
         </p>
       </div>
       {loading ? <p className="text-sm text-muted-foreground">Loading final payouts…</p> : null}
@@ -500,17 +506,24 @@ function InvestmentPayoutsTab() {
             {new Date(payout.created_at).toLocaleString()}
           </p>
           <div className="space-y-1 rounded-xl bg-secondary/60 p-3">
-            <p>Accumulated plan earnings: {ugx(payout.earnings_amount)}</p>
+            <p>Daily plan earnings: {ugx(payout.earnings_amount)}</p>
             <p>Eligible capital return: {ugx(payout.capital_amount)}</p>
             <p className="border-t border-border pt-1 font-semibold">Total final payout: {ugx(payout.amount)}</p>
           </div>
           <button
             className="w-full rounded-xl bg-primary py-2 text-primary-foreground disabled:opacity-60"
             type="button"
-            disabled={busy === payout.id}
+            disabled={
+              busy === payout.id ||
+              (payout.user_investments?.payouts_claimed ?? 0) < (payout.user_investments?.validity_days ?? 0)
+            }
             onClick={() => approve(payout.id)}
           >
-            {busy === payout.id ? "Approving…" : "Approve and credit final payout"}
+            {busy === payout.id
+              ? "Approving…"
+              : (payout.user_investments?.payouts_claimed ?? 0) < (payout.user_investments?.validity_days ?? 0)
+                ? "Daily rewards release at midnight EAT"
+                : "Approve and credit final payout"}
           </button>
         </article>
       ))}

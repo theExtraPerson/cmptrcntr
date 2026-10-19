@@ -12,6 +12,7 @@ declare
     'withdrawals',
     'user_investments',
     'income_history',
+    'investment_daily_rewards',
     'payments',
     'investment_payouts',
     'success_stories'
@@ -20,6 +21,7 @@ declare
     'public.settle_payment(uuid,boolean,text,text,uuid)',
     'public.request_payment_withdraw(uuid,numeric,numeric,numeric,text,text)',
     'public.credit_referral_commissions(uuid,numeric,uuid)',
+    'public.release_daily_investment_rewards(uuid)',
     'public.prepare_investment_payouts(uuid)',
     'public.review_investment_payout(uuid,uuid)',
     'public.process_user_payouts(uuid)',
@@ -64,6 +66,23 @@ begin
     raise exception 'service_role must be able to execute public.settle_payment';
   end if;
 
+  if not has_function_privilege(
+    'service_role',
+    'public.release_daily_investment_rewards(uuid)',
+    'EXECUTE'
+  ) then
+    raise exception 'service_role must be able to execute public.release_daily_investment_rewards';
+  end if;
+
+  if not exists (
+    select 1
+    from cron.job
+    where jobname = 'release-daily-investment-rewards-eat'
+      and schedule = '0 21 * * *'
+  ) then
+    raise exception 'Daily investment rewards must be scheduled for midnight EAT';
+  end if;
+
   if not exists (
     select 1 from public.platform_settings
     where key = 'min_withdrawal' and value::numeric >= 3000
@@ -100,5 +119,6 @@ $$;
 select
   (select count(*) from public.investment_products where is_active) as active_products,
   (select count(*) from public.payments) as payment_ledger_rows,
+  (select count(*) from public.investment_daily_rewards) as daily_reward_rows,
   (select count(*) from public.investment_payouts where status = 'PENDING') as pending_final_payouts,
   (select count(*) from public.profiles) as profiles;

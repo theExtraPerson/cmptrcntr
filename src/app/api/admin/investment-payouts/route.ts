@@ -11,7 +11,7 @@ export async function GET(req: Request) {
 
   const { data, error: queryError } = await admin
     .from("investment_payouts")
-    .select("*, profiles:profiles!investment_payouts_user_id_fkey(username, phone), user_investments(product_name, amount, daily_income, validity_days)")
+    .select("*, profiles:profiles!investment_payouts_user_id_fkey(username, phone), user_investments(product_name, amount, daily_income, validity_days, payouts_claimed)")
     .eq("status", "PENDING")
     .order("created_at", { ascending: true })
     .limit(100);
